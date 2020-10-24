@@ -6,7 +6,7 @@
 #include "ne_exe.h"
 #include "lx_load.h"
 #include "peheader.h"
-
+#include "coff.h"
 //signatures
 /*#define MZ 0x5a4d
 #define NE 0x454e
@@ -18,6 +18,8 @@ int is_modern = 0; // 1 for type NE,LX,PE
 int is_pe = 0;
 int is_ne = 0;
 int is_lx = 0;
+int is_dj = 0;
+int is_cf = 0;
 
 void usage(const char* str)
 {
@@ -61,9 +63,9 @@ int main(int argc, char *argv[])
         //we allocated a buffer of size equals the file size.
 		//int ret_read =fread(efile,sz,1,fp);
 		//printf("file load returns %ld \n",ret_read);
-		if(fread(efile,sz,1,fp)!=1)
+	if(fread(efile,sz,1,fp)!=1)
         {
-			error_msg("File Read error",__FILE__,__func__,__LINE__);
+	    error_msg("File Read error",__FILE__,__func__,__LINE__);
             free(efile);
             fclose(fp);
             exit(-4);
@@ -78,17 +80,39 @@ int main(int argc, char *argv[])
         #endif
         if(!is_valid_exe(efile))
         {
-			printf("Not a valid exe %s\n",argv[1]);
-			goto error_exit;
-		}
+		printf("Not a valid exe %s\n",argv[1]);
+		printf("Checking if the file is a COFF file\n");
+		is_cf = is_coff(efile);
+		goto chk_coff;
+	}
+	printf("[ %s ]A valid exe file\n",argv[1]);
         display_dos_hdr_info(efile);
+        
         if(is_modern_exe(efile)==1)
         {
                 printf( "Seems to be a Modern EXE file\n");
                 is_modern = 1;
         }
+        else
+        {
+    		printf("\nDoesn't Seem to be a Modern EXE file\n");
+    		printf("Checking if a DJGPP compiled exe or a COFF file...\n");
+    		is_dj = is_DJ(efile);
+    	}
+chk_coff:
+/*	if(is_coff(efile) == 0)
+	{
+		printf("Not a coff file...\n");
+		goto error_exit;
+	}
+	else
+	{
+		is_cf = 1;
+	//	is_modern =1; // well its not true ;)
+	}*/
         if(is_modern)
         {
+        /*
                 unsigned short sig =read_signature(efile);
                 printf("Signature : ");
                 switch(sig)
@@ -101,19 +125,42 @@ int main(int argc, char *argv[])
                                         break;
                         default : printf("Unknown (0x%0x)\n",sig);
                 }
-        }
+         */
+		is_ne = is_NE(efile);
+		is_lx = is_LX(efile);
+		is_pe = is_PE(efile);
+	}
         pe_opt_hdr *oph=NULL;
         if(is_lx)
+        {
+		printf("\nLX file...\n");
                 dump_lx_header(efile);
+        }
         if(is_ne)
+        {
+    		printf("\nNE file...\n");
                 dump_ne_header(efile);
+        }
         if(is_pe)
         {
+    		printf("\nPE file...\n");
                 dump_pe_header_info(efile);
                 oph = get_opt_hdr(efile);
                 dump_opt_header_info(oph);
         }
+	if(is_dj)
+	{
+		printf("\nDJGPP compiled file...\n");
+		unsigned char *cof = efile+2048;
+		disp_coff_hdr(cof);
+	}
+	if(is_cf)
+	{
+		printf("\nCOFF file...\n");
+		disp_coff_hdr(efile);
+	}
 error_exit:
+	
         //cleanup code
         //cleanup code
         if(fp!=NULL)

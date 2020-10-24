@@ -5,7 +5,14 @@
 #include <string.h>
 #include "dos_exe.h"
 #include "lx_load.h"
-
+int is_LX(unsigned char *efile)
+{
+	unsigned short sig =read_signature(efile);
+	if(sig == LX)
+		return(1);
+	else
+		return(0);
+}
 lx_hdr *read_lx_header_old(FILE *efile, ext_header *exh)
 {
 	lx_hdr *lxh = NULL;

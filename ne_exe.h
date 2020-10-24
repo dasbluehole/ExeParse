@@ -229,6 +229,7 @@ int dummy;
 #define MAX_RESOURCES 300
 
 // functions 
+int is_NE(unsigned char *efile);
 ne_hdr *read_ne_hdr_old(FILE *efile, ext_header *exh);
 void dump_ne_header_old(ne_hdr *neh);
 ne_hdr *read_ne_hdr(unsigned char *buffer);

@@ -196,6 +196,9 @@ static struct subsystem subsys[13]={
     {14,"Xbox system"},
     {16,"Boot application"}
 };
+
+// function proto
+int is_PE(unsigned char *efile);
 pe_hdr *get_pe_header(unsigned char *efile);
 void dump_pe_header_info(unsigned char *efile);
 pe_opt_hdr *get_opt_hdr(unsigned char *efile);

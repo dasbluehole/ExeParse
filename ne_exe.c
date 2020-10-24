@@ -4,7 +4,14 @@
 #include <string.h>
 #include "dos_exe.h"
 #include "ne_exe.h"
-
+int is_NE(unsigned char *efile)
+{
+	unsigned short sig =read_signature(efile);
+	if(sig == NE)
+		return(1);
+	else
+		return(0);
+}
 ne_hdr *read_ne_hdr_old(FILE *efile, ext_header *exh)
 {
 	ne_hdr *neh = NULL;

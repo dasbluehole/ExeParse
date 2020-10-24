@@ -204,6 +204,8 @@ typedef struct
 // bit combo
 #define OF_RESCONTIGUOUS	0x0300
 
+// function proto
+int is_LX(unsigned char *efile);
 lx_hdr *read_lx_header_old(FILE *efile, ext_header *exh);
 void dump_lx_header_old(lx_hdr *lx_exe);
 lx_hdr *read_lx_header(unsigned char *buffer);

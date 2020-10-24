@@ -7,6 +7,14 @@
 #include "dos_exe.h"
 #include "peheader.h"
 uint32_t mybase=0;
+int is_PE(unsigned char *efile)
+{
+	unsigned short sig =read_signature(efile);
+	if(sig == PE)
+		return(1);
+	else
+		return(0);
+}
 pe_hdr *get_pe_header(unsigned char *efile)
 {
 	if(!efile)
